@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ group.title }} - Group Info</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+        .light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+  --text: #000000;
+  --text-muted: #ffffff;
+}
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: Arial, sans-serif;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .top-bar a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .top-bar a:hover {
+            color: var(--primary-hover);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            margin: 30px 0 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .member-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .member-item {
+            background-color: var(--bg-dark);
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .admin-actions {
+            margin-top: 40px;
+        }
+
+        .admin-actions h3 {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        select, button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            background-color: var(--bg-dark);
+            color: var(--text);
+        }
+
+        button {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .note {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .leave-btn {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .leave-btn button {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .leave-btn button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .delete-btn button {
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .delete-btn button:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="{% url 'group_detail' group.id %}">←back to group</a>
+    </div>
+
+    <div class="container">
+        <h2>{{ group.title }}</h2>
+        {% if group.description %}
+            <div class="meta">{{ group.description }}</div>
+        {% endif %}
+        <div class="meta">Created by: {{ group.admin.username }} | {{ group.created_at|date:"M d, Y" }}</div>
+
+        <!-- Search Bar -->
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search group members..." onkeyup="filterMembers(this.value)">
+        </div>
+
+        <!-- Member List -->
+        <ul class="member-list" id="memberList">
+            {% for member in members %}
+                <li class="member-item">{{ member.username }}</li>
+            {% empty %}
+                <li class="member-item">No members in this group.</li>
+            {% endfor %}
+        </ul>
+
+        {% if is_admin %}
+        <!-- Admin Actions -->
+        <div class="admin-actions">
+            <h3>Admin Controls</h3>
+
+            <!-- Add Member -->
+            <form method="POST" action="{% url 'add_member' group.id %}" class="form-inline">
+                {% csrf_token %}
+                <select name="user_to_add" required>
+                    <option value="">Add a new member</option>
+                    {% for user in users_not_in_group %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Add</button>
+            </form>
+
+            <!-- Remove Member -->
+            <form method="POST" action="{% url 'remove_member' group.id %}" class="form-inline">
+                {% csrf_token %}
+                <select name="user_to_remove" required>
+                    <option value="">Remove a member (no dues)</option>
+                    {% for user in removable_members %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Remove</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Leave Group -->
+        <div class="leave-btn">
+            <form method="POST" action="{% url 'leave_group' group.id %}">
+                {% csrf_token %}
+                <button type="submit">Leave Group</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Group (Admin Only) -->
+    {% if is_admin %}
+    <form method="POST" action="{% url 'delete_group' group.id %}" onsubmit="return confirmDelete()" style="margin-top: 30px; text-align: center;" class="delete-btn">
+        {% csrf_token %}
+        <button type="submit">Delete Group</button>
+    </form>
+    {% endif %}
+
+    <script>
+        function filterMembers(query) {
+            const list = document.getElementById("memberList");
+            const items = list.getElementsByTagName("li");
+            query = query.toLowerCase();
+
+            for (let i = 0; i < items.length; i++) {
+                const text = items[i].textContent.toLowerCase();
+                items[i].style.display = text.includes(query) ? "" : "none";
+            }
+        }
+
+        function confirmDelete() {
+            {% if can_delete_group %}
+                return confirm("Are you sure you want to delete this group? This action will remove the group for all members.");
+            {% else %}
+                alert("This group cannot be deleted until all members (except you) have received their dues.");
+                return false;
+            {% endif %}
+        }
+    </script>
+    <script>
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  };
+</script>
+</body>
+</html>
+

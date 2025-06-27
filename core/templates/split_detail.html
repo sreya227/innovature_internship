@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Split Detail</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+        .light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+}
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.05);
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            color: var(--accent);
+            font-size: 24px;
+            margin: 0 0 8px;
+        }
+
+        .section-header p {
+            margin: 4px 0;
+            color: var(--text-muted);
+        }
+
+        .payer-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0;
+        }
+
+        .payer-item {
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payer-label {
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .payer-status {
+            color: var(--text-muted);
+        }
+
+        .mark-paid-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .mark-paid-form input[type="number"] {
+            width: 100px;
+            padding: 6px;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--bg-card);
+            color: var(--text);
+        }
+
+        .mark-paid-form button {
+            background-color: var(--accent);
+            color: black;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .mark-paid-form button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section-header">
+            <h2>{{ split.description }}</h2>
+            <p><strong>Amount:</strong> ₹{{ split.amount }}</p>
+            <p><strong>Split by:</strong> {{ split.split_by.username }}</p>
+        </div>
+
+        <h3 style="color: var(--primary); margin-bottom: 10px;">Payers</h3>
+        <ul class="payer-list">
+            {% for p in payers %}
+                {% with payer=p.obj total_paid=p.total_paid remaining=p.remaining %}
+                    <li class="payer-item">
+                        <div>
+                            <span class="payer-label">
+                                {% if payer.payer_id == request.user %}
+                                    You
+                                {% else %}
+                                    {{ payer.payer_id.username }}
+                                {% endif %}
+                            </span><br>
+                            <span class="payer-status">
+                                {% if remaining <= 0 %}
+                                    paid ₹{{ payer.amount }}
+                                {% else %}
+                                    owes ₹{{ remaining|floatformat:2 }}
+                                {% endif %}
+                            </span>
+
+                            {% if request.user == split.split_by and remaining > 0 %}
+                                <form method="POST" action="{% url 'record_settlement' split.id %}" class="mark-paid-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="payer_id" value="{{ payer.payer_id.id }}">
+                                    <input type="number" name="amount_paid" step="0.01" min="0.01" max="{{ remaining }}" required>
+                                    <button type="submit">Amount Paid</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endwith %}
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'group_detail' split.grp_id.id %}?{{ request.GET.urlencode }}" class="back-link">← back to group</a>
+    </div>
+    <script>
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  };
+</script>
+</body>
+</html>
+

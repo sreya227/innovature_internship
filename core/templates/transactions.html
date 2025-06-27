@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction History</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+        .light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+  --text: #ffffff;
+  --text-muted: #ffffff;
+  --accent:#FFA400;
+}
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: var(--primary-hover);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            padding: 35px 30px;
+            border-radius: 14px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-dark);
+            color: var(--accent);
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #1d1d1d;
+        }
+
+        .amount-paid {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .amount-owed {
+            color: #FF6F61;
+            font-weight: bold;
+        }
+
+        td {
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .no-transactions {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'dashboard' %}" class="back-link">←back to dashboard</a>
+    <div class="container">
+        <h1>Transaction History</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Group</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>With</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr>
+                    <td>{{ t.payer.split_id.grp_id.title }}</td>
+                    <td>{{ t.payer.split_id.description }}</td>
+                    <td>
+                        {% if t.payer.payer_id == user %}
+                            <span class="amount-owed">- ₹{{ t.amount_paid|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="amount-paid">+ ₹{{ t.amount_paid|floatformat:2 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if t.payer.split_id.split_by == user %}
+                            {{ t.payer.payer_id.username }}
+                        {% else %}
+                            {{ t.payer.split_id.split_by.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ t.paid_on|date:"d M Y" }}</td>
+                    <td>{{ t.paid_on|time:"H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="no-transactions">No transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  };
+</script>
+</body>
+</html>
+

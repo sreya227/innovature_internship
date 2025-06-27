@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Group</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+        .light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+  --text: #000000;
+  --text-muted: #ffffff;
+}
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        select[multiple] {
+            height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            margin-top: 25px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .error {
+            color: #f87171;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .required-star {
+            color: red;
+        }
+
+        .note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Select2 overrides */
+        .select2-container--default .select2-selection--multiple {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .select2-container--default .select2-results > .select2-results__options {
+            background-color: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--primary) !important;
+            color: white !important;
+        }
+
+        .select2-container--default .select2-dropdown .select2-search__field {
+            background-color: white !important;
+            color: black !important;
+            border: 1px solid var(--border) !important;
+            caret-color: var(--primary);
+        }
+    </style>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#members').select2({
+                placeholder: "Search and select members",
+                width: '100%',
+                allowClear: true,
+                dropdownParent: $('.container')
+            });
+
+            $('#members').on('select2:open', function () {
+                function applyHoverStyle() {
+                    $('.select2-results__option').off('mouseenter').on('mouseenter', function () {
+                        $('.select2-results__option').css({
+                            'background-color': '',
+                            'color': ''
+                        });
+                        $(this).css({
+                            'background-color': '#FF6F61',
+                            'color': 'white'
+                        });
+                    });
+                }
+
+                setTimeout(function () {
+                    const input = document.querySelector('.select2-search__field');
+                    if (input) {
+                        input.style.backgroundColor = 'white';
+                        input.style.color = 'black';
+                        input.style.caretColor = '#FF6F61';
+                    }
+
+                    applyHoverStyle();
+
+                    const observer = new MutationObserver(function () {
+                        $('.select2-results__option--highlighted[aria-selected]').css({
+                            'background-color': '#FF6F61',
+                            'color': 'white'
+                        });
+                    });
+
+                    const resultsList = document.querySelector('.select2-results__options');
+                    if (resultsList) {
+                        observer.observe(resultsList, { childList: true, subtree: true });
+                    }
+                }, 0);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Create group</h1>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <label for="title">Group Title <span class="required-star">*</span></label>
+            <input type="text" name="title" id="title" required>
+            {% if error_title %}<p class="error">{{ error_title }}</p>{% endif %}
+
+            <label for="description">Group Description</label>
+            <textarea name="description" id="description" rows="3"></textarea>
+
+            <label for="members">Add Members <span class="required-star">*</span></label>
+            <select name="members" id="members" multiple required>
+                {% for user in users %}<option value="{{ user.id }}">{{ user.username }}</option>{% endfor %}
+            </select>
+            <div class="note">Press ctrl/cmd to select more than one user</div>
+            {% if error_members %}<p class="error">{{ error_members }}</p>{% endif %}
+
+            <button type="submit">Create</button>
+        </form>
+
+        <div class="back-link">
+            <a href="{% url 'groups' %}">←back to groups</a>
+        </div>
+    </div>
+    <script>
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  };
+</script>
+</body>
+</html>
+

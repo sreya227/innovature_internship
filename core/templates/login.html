@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-dark);
+            font-family: Arial, sans-serif;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .login-container h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .show-password-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+            justify-content: flex-start;
+            color: var(--text-muted);
+        }
+
+        button {
+            margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            background-color: var(--accent);
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+        .forgot-link {
+  color: var(--primary);
+  font-size:14px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 15px;
+}
+
+.forgot-link:hover {
+  color: var(--primary-hover);
+}
+        .signup-link {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            font-weight: bold;
+            text-decoration: none;
+            padding: 0.3rem 0.6rem;
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            margin-left: 0.5rem;
+        }
+
+        .signup-link a:hover {
+            background-color: var(--primary-hover);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to your account</h2>
+        <form method="post" autocomplete="off">
+            {% if error %}
+                <p style="color: #f87171; margin-top: 1rem;">{{ error }}</p>
+            {% endif %}
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_email">Email or Username:</label>
+                <input type="text" name="identifier" id="id_identifier" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Password:</label>
+                <input type="password" name="password" id="id_password" required autocomplete="off">
+            </div>
+
+            <div class="show-password-group">
+                <input type="checkbox" id="togglePassword">
+                <label for="togglePassword">Show password</label>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+        <a href="{% url 'forgot_password' %}" class="forgot-link">Forgot password?</a>
+        <div class="signup-link">
+            Don't have an account?
+            <a href="{% url 'signup' %}">Sign Up</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("id_identifier").addEventListener("input", function () {
+            const passwordInput = document.getElementById("id_password");
+            passwordInput.setAttribute("autocomplete", "current-password");
+        });
+
+        document.getElementById("togglePassword").addEventListener("change", function () {
+            const passwordInput = document.getElementById("id_password");
+            passwordInput.type = this.checked ? "text" : "password";
+        });
+    </script>
+</body>
+</html>
+

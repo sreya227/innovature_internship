@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Groups</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #FF6F61;
+      --primary-hover: #e85c50;
+      --accent: #FFD166;
+      --accent-hover: #f6c441;
+      --bg-dark: #0f0f0f;
+      --bg-card: #1e1e1e;
+      --text: #ffffff;
+      --text-muted: #cccccc;
+      --border: #333333;
+    }
+    /* Light theme overrides */
+.light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+}
+
+
+* { transition: background 0.4s ease, color 0.4s ease; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color:var(--bg-dark)
+  }
+    .container {
+      max-width: 960px;
+      margin: 80px auto;
+      padding: 30px;
+      background: var(--bg-card);
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--accent);
+    }
+
+    .create-btn {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .create-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .search-bar {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .search-bar input[type="text"] {
+      width: 100%;
+      padding: 12px 50px 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background-color: #121212;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent);
+      border: none;
+      color: #000;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-controls {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      color: var(--accent);
+    }
+
+    .form-controls select {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background-color: #121212;
+      color: var(--text);
+    }
+
+    .form-controls .icon-label i {
+      color: var(--accent);
+    }
+
+    .group-card {
+      background: #181818;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border);
+    }
+
+    .group-card:hover {
+      box-shadow: 0 10px 20px rgba(255, 209, 102, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .group-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+    }
+
+    .group-description {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .pagination a,
+    .pagination span {
+      display: inline-block;
+      margin: 0 5px;
+      padding: 6px 14px;
+      font-size: 14px;
+      border-radius: 6px;
+      background-color: #2c2c2c;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--border);
+    }
+
+    .pagination span {
+      background-color: var(--accent-hover);
+      font-weight: 600;
+      color: white;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-top: 40px;
+    }
+
+    .profile-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: var(--accent);
+      color: black;
+      border: none;
+      border-radius: 100px;
+      padding: 10px 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .profile-button:hover {
+      background-color: var(--accent-hover);
+    }
+  </style>
+</head>
+<body id="body" class="">
+<button onclick="toggleTheme()" 
+  style="position: fixed; top: 1rem; left: 1rem; z-index: 999; background: var(--accent); border: none; padding: 0.5rem 1rem; border-radius: 8px; color: var(--text); display: flex; align-items: center; justify-content: center;"
+  id="themeToggleBtn"
+>
+  <i data-lucide="moon" id="themeIcon" style="width: 20px; height: 20px;"></i>
+</button>
+
+  <a href="{% url 'dashboard' %}" class="profile-button">
+    <i data-lucide="user"></i> {{ request.user.username }}
+  </a>
+
+  <div class="container">
+    <div class="header">
+      <h1><i data-lucide="users"></i> My Groups</h1>
+      <a href="{% url 'create_group' %}" class="create-btn">
+        <i data-lucide="plus-circle"></i> New Group
+      </a>
+    </div>
+
+    <form method="get" class="search-bar">
+      <input type="text" name="q" placeholder="Search groups..." value="{{ query }}">
+      <button type="submit" class="search-btn">
+        <i data-lucide="search"></i>
+      </button>
+    </form>
+
+    <form method="get" class="form-controls">
+      <div class="icon-label">
+        <i data-lucide="sort-asc"></i>
+        <select name="sort" id="sort" onchange="this.form.submit()">
+          <option value="">-- Select --</option>
+          <option value="a_to_z" {% if request.GET.sort == "a_to_z" %}selected{% endif %}>A → Z</option>
+          <option value="z_to_a" {% if request.GET.sort == "z_to_a" %}selected{% endif %}>Z → A</option>
+          <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Newest</option>
+          <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest</option>
+        </select>
+      </div>
+      <div class="icon-label">
+        <i data-lucide="filter"></i>
+        <select name="filter" id="filter" onchange="this.form.submit()">
+          <option value="">-- Select --</option>
+          <option value="pending_from_others" {% if request.GET.filter == "pending_from_others" %}selected{% endif %}>Pending from others</option>
+          <option value="pending_from_me" {% if request.GET.filter == "pending_from_me" %}selected{% endif %}>Pending from me</option>
+          <option value="created_by_me" {% if request.GET.filter == "created_by_me" %}selected{% endif %}>Groups I created</option>
+          <option value="fully_settled" {% if request.GET.filter == "fully_settled" %}selected{% endif %}>Fully settled</option>
+        </select>
+      </div>
+    </form>
+
+    {% if groups %}
+    {% with request.GET.urlencode as full_query %}
+  {% if full_query %}
+    {% if "page=" in full_query %}
+      {% with full_query|cut:"page=" as base_query %}
+        {% with base_query|add:"&" as preserved_query %}
+        {% endwith %}
+      {% endwith %}
+    {% else %}
+      {% with full_query|add:"&" as preserved_query %}
+      {% endwith %}
+    {% endif %}
+  {% else %}
+    {% with "" as preserved_query %}
+    {% endwith %}
+  {% endif %}
+{% endwith %}
+      {% for group in groups %}
+        <a href="{% url 'group_detail' group.id %}" style="text-decoration: none;">
+          <div class="group-card">
+            <div class="group-title"><i data-lucide="folder"></i> {{ group.title }}</div>
+            <div class="group-description">{{ group.description }}</div>
+          </div>
+        </a>
+      {% endfor %}
+
+      <div class="pagination">
+  {% if groups.has_previous %}
+    <a href="?{{ preserved_query }}page={{ groups.previous_page_number }}"><i data-lucide="arrow-left"></i> Prev</a>
+  {% endif %}
+
+  {% for num in groups.paginator.page_range %}
+    {% if num == groups.number %}
+      <span>{{ num }}</span>
+    {% else %}
+      <a href="?{{ preserved_query }}page={{ num }}">{{ num }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if groups.has_next %}
+    <a href="?{{ preserved_query }}page={{ groups.next_page_number }}">Next <i data-lucide="arrow-right"></i></a>
+  {% endif %}
+</div>
+    {% else %}
+      <div class="empty-msg">
+        <i data-lucide="info"></i> You're not in any groups yet. Create one above!
+      </div>
+    {% endif %}
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  // Setup icons on initial load
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+
+    // Set initial icon if it exists
+    const themeIcon = document.getElementById("themeIcon");
+    if (themeIcon) {
+      const isLight = document.body.classList.contains("light-theme");
+      themeIcon.setAttribute("data-lucide", isLight ? "sun" : "moon");
+      lucide.createIcons();
+    }
+  };
+
+  // Toggle theme + switch icon
+  function toggleTheme() {
+    const isLight = document.body.classList.contains("light-theme");
+    const themeIcon = document.getElementById("themeIcon");
+
+    if (isLight) {
+      document.body.classList.remove("light-theme");
+      localStorage.setItem('theme', 'dark');
+      if (themeIcon) themeIcon.setAttribute("data-lucide", "moon");
+    } else {
+      document.body.classList.add("light-theme");
+      localStorage.setItem('theme', 'light');
+      if (themeIcon) themeIcon.setAttribute("data-lucide", "sun");
+    }
+
+    if (themeIcon) lucide.createIcons();
+  }
+</script>
+
+</body>
+</html>
+
