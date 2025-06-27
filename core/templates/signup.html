@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-dark);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .signup-container {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .signup-container h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .show-password-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+            justify-content: flex-start;
+            color: var(--text-muted);
+        }
+
+        button {
+            margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            background-color: var(--accent);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        ul {
+            margin-top: 0.4rem;
+            color: #f87171;
+            font-size: 0.9rem;
+            list-style: none;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Create new account</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+                {% if form.is_bound and form.username.errors %}
+                    <ul>
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+                {% if form.is_bound and form.email.errors %}
+                    <ul>
+                        {% for error in form.email.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Password:</label>
+                {{ form.password1 }}
+                {% if form.is_bound and form.password1.errors %}
+                    <ul>
+                        {% for error in form.password1.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Confirm Password:</label>
+                {{ form.password2 }}
+                {% if form.is_bound and form.password2.errors %}
+                    <ul>
+                        {% for error in form.password2.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="show-password-group">
+                <input type="checkbox" id="togglePassword">
+                <label for="togglePassword">Show password</label>
+            </div>
+
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("togglePassword").addEventListener("change", function () {
+            const pwd1 = document.getElementById("id_password1");
+            const pwd2 = document.getElementById("id_password2");
+            const type = this.checked ? "text" : "password";
+            if (pwd1) pwd1.type = type;
+            if (pwd2) pwd2.type = type;
+        });
+    </script>
+</body>
+</html>
+

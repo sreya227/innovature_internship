@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>{{ group.title }}</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+        
+        .light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+}
+        body {
+            margin: 0;
+            padding: 0;
+            background-color:var(--bg-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .left-column {
+            flex: 3;
+        }
+
+        .right-column {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .back-link {
+            color: var(--primary);
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+    color: var(--primary-hover);
+}
+        .group-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .group-card h1 {
+            margin: 0;
+            color: var(--accent);
+        }
+
+        .group-card p {
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        .group-card:hover {
+    background: #2c2c2c;
+}
+
+.group-card:hover h1 {
+    color: var(--accent-hover);
+}
+
+.group-card:hover p {
+    color: var(--text);
+}
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .alert.error {
+            background-color: #4a1c1c;
+            color: #f87171;
+        }
+
+        .alert.success {
+            background-color: #1c3f2a;
+            color: #4ade80;
+        }
+
+        .dues-card {
+    background-color: var(--accent);
+    color: #000;
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    line-height: 1.2;
+}
+.dues-card h3 {
+    margin: 5px 0 4px;
+    font-size: 16px;
+}
+.dues-card p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: bold;
+}
+.dues-card:hover {
+    background-color: var(--accent-hover);
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    transform: scale(1.02);
+}
+
+        .split-form {
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .split-form h2 {
+            color: var(--accent);
+        }
+
+        .split-form label {
+        color: white;
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .split-form input,
+        .split-form select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 6px;
+            background-color: #333;
+            color: var(--text);
+        }
+
+        .split-form button {
+            margin-top: 15px;
+            background-color: var(--primary);
+            color: var(--text);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .split-form button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 25px 0;
+            align-items: center;
+        }
+
+        .toolbar select,
+        .toolbar input {
+            padding: 6px;
+            border-radius: 6px;
+            background-color: #333;
+            color: var(--text);
+            border: none;
+        }
+
+        .split-item {
+            background-color: var(--bg-card);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .split-item a {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .split-item a:hover {
+            color: var(--primary-hover);
+        }
+
+        .error-message {
+            color: #f87171;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: row;
+                gap: 20px;
+            }
+
+            .left-column {
+                flex: 2;
+            }
+
+            .right-column {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Left column -->
+    <div class="left-column">
+        <a href="{% url 'groups' %}" class="back-link">← Back to Groups</a>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <a href="{% url 'group_info' group.id %}" style="text-decoration: none;">
+    <div class="group-card">
+        <h1>{{ group.title }}</h1>
+        <p>{{ group.description }}</p>
+    </div>
+</a>
+
+        <!-- Toolbar -->
+<form method="GET" class="toolbar" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 20px;">
+    
+    <!-- Sort -->
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <i data-lucide="sort-asc" style="width: 28px; height: 28px; color: var(--accent);"></i>
+        <select name="sort" id="sort" onchange="this.form.submit()" style="padding: 6px; border-radius: 6px;">
+            <option value="-created_at" {% if request.GET.sort == "-created_at" or not request.GET.sort %}selected{% endif %}>Newest First</option>
+            <option value="created_at" {% if request.GET.sort == "created_at" %}selected{% endif %}>Oldest First</option>
+            <option value="-amount" {% if request.GET.sort == "-amount" %}selected{% endif %}>Amount: High to Low</option>
+            <option value="amount" {% if request.GET.sort == "amount" %}selected{% endif %}>Amount: Low to High</option>
+        </select>
+    </div>
+
+    <!-- Filter Type -->
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <i data-lucide="filter" style="width: 28px; height: 28px; color: var(--accent);"></i>
+        <select name="filter_type" id="filter_type" onchange="toggleAmountFields(); this.form.submit()" style="padding: 6px; border-radius: 6px;">
+            <option value="">All</option>
+            <option value="category" {% if request.GET.filter_type == "category" %}selected{% endif %}>Category</option>
+            <option value="split_by" {% if request.GET.filter_type == "split_by" %}selected{% endif %}>Split By</option>
+            <option value="payer" {% if request.GET.filter_type == "payer" %}selected{% endif %}>Payer</option>
+            <option value="amount_range" {% if request.GET.filter_type == "amount_range" %}selected{% endif %}>Amount Range</option>
+            <option value="payment_status" {% if request.GET.filter_type == "payment_status" %}selected{% endif %}>Payment Status</option>
+        </select>
+    </div>
+
+    <!-- Filter Value -->
+    <div id="filter-value-dropdown">
+        <select name="filter_value" onchange="this.form.submit()" style="padding: 6px; border-radius: 6px;">
+            <option value="">-- Select --</option>
+            {% if request.GET.filter_type == "category" %}
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if request.GET.filter_value == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            {% elif request.GET.filter_type in "split_by payer" %}
+                {% for member in group.groupmembers_set.all %}
+                    <option value="{{ member.member_id.username }}" {% if request.GET.filter_value == member.member_id.username %}selected{% endif %}>
+                        {{ member.member_id.username }}
+                    </option>
+                {% endfor %}
+            {% elif request.GET.filter_type == "payment_status" %}
+                <option value="paid" {% if request.GET.filter_value == "paid" %}selected{% endif %}>Fully Paid</option>
+                <option value="pending" {% if request.GET.filter_value == "pending" %}selected{% endif %}>Pending</option>
+            {% endif %}
+        </select>
+    </div>
+
+    <!-- Amount Range -->
+    <div id="amount-range-fields" style="display: none; gap: 6px; align-items: center;">
+        <input type="number" name="min_amount" placeholder="Min" value="{{ request.GET.min_amount }}" style="padding: 6px; border-radius: 6px; width: 80px;">
+        <input type="number" name="max_amount" placeholder="Max" value="{{ request.GET.max_amount }}" style="padding: 6px; border-radius: 6px; width: 80px;">
+    </div>
+</form>
+
+
+        <!-- Split List -->
+        <div class="split-list">
+            {% for split in splits %}
+                <div class="split-item">
+                    <a href="{% url 'split_detail' split.id %}?{{ request.GET.urlencode }}">
+                        ₹{{ split.amount }}
+                    </a><br>
+                    {% if split.is_closed %}
+                        <span style="color: #4ade80; font-size: 14px;">Closed</span>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>No splits added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Right column -->
+<div class="right-column">
+    <!-- Create Split -->
+    <form method="POST" action="{% url 'create_split' group.id %}" class="split-form" onsubmit="return validateCustomSplit()">
+        {% csrf_token %}
+        <h2>Add a New Split</h2>
+
+        <label for="amount">Amount: ₹</label>
+        <input type="number" name="amount" id="amount" step="any" required>
+
+        <label for="description">Description:</label>
+        <input type="text" name="description" id="description">
+
+        <label for="split_type">Split Type:</label>
+        <select name="split_type" id="split_type" onchange="toggleCustomSplit()">
+            <option value="equal">Equal</option>
+            <option value="custom">Custom</option>
+        </select>
+
+        <div id="custom-split-section" style="margin-top: 15px; display: none;">
+            <p>Enter amounts per member:</p>
+            {% for member in group.groupmembers_set.all %}
+                <div style="margin-bottom: 8px;">
+                    <label>{{ member.member_id.username }}:</label>
+                    <input type="number" step="any" name="custom_{{ member.member_id.id }}" class="custom-amount" data-username="{{ member.member_id.username }}">
+                </div>
+            {% endfor %}
+            <div class="error-message" id="custom-error" style="display: none;"></div>
+        </div>
+
+        <button type="submit">Create Split</button>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+    </form>
+
+    <a href="{% url 'group_dues' group.id %}?type=to-be-paid">
+        <div class="dues-card">
+            <h3>To Be Paid</h3>
+            <p>₹{{ to_be_paid|floatformat:2 }}</p>
+        </div>
+    </a>
+    <a href="{% url 'group_dues' group.id %}?type=to-pay">
+        <div class="dues-card">
+            <h3>To Pay</h3>
+            <p>₹{{ to_pay|floatformat:2 }}</p>
+        </div>
+    </a>
+</div>
+
+    
+</div>
+
+<script>
+    function toggleCustomSplit() {
+        const splitType = document.getElementById("split_type").value;
+        const customSection = document.getElementById("custom-split-section");
+        customSection.style.display = (splitType === "custom") ? "block" : "none";
+    }
+
+    function validateCustomSplit() {
+        const splitType = document.getElementById("split_type").value;
+        if (splitType !== "custom") return true;
+
+        const totalInput = parseFloat(document.getElementById("amount").value);
+        let sum = 0;
+        let valid = true;
+        const errorBox = document.getElementById("custom-error");
+        errorBox.style.display = "none";
+        errorBox.textContent = "";
+
+        document.querySelectorAll(".custom-amount").forEach(input => {
+            const val = parseFloat(input.value) || 0;
+            if (val < 0) valid = false;
+            sum += val;
+        });
+
+        if (!valid || isNaN(totalInput)) {
+            errorBox.textContent = "Amounts must be non-negative.";
+            errorBox.style.display = "block";
+            return false;
+        }
+
+        if (Math.abs(sum - totalInput) > 0.01) {
+            errorBox.textContent = "Custom amounts must total to ₹" + totalInput.toFixed(2);
+            errorBox.style.display = "block";
+            return false;
+        }
+
+        return true;
+    }
+
+    function toggleAmountFields() {
+        const filterType = document.getElementById('filter_type').value;
+        const amountFields = document.getElementById('amount-range-fields');
+        const filterValueDropdown = document.getElementById('filter-value-dropdown');
+
+        const isAmount = filterType === 'amount_range';
+        amountFields.style.display = isAmount ? 'flex' : 'none';
+        filterValueDropdown.style.display = isAmount ? 'none' : 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const minField = document.querySelector('input[name="min_amount"]');
+        const maxField = document.querySelector('input[name="max_amount"]');
+        const filterType = document.getElementById('filter_type');
+        const form = minField.closest('form');
+
+        let debounceTimer;
+
+        function delayedSubmit() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                filterType.value = 'amount_range';
+                form.submit();
+            }, 500);
+        }
+
+        minField.addEventListener('input', delayedSubmit);
+        maxField.addEventListener('input', delayedSubmit);
+
+        toggleAmountFields();
+        toggleCustomSplit();
+    });
+</script>
+<script>
+    lucide.createIcons();
+</script>
+<script>
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  };
+</script>
+</body>
+</html>
+

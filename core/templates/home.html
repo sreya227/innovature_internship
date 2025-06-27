@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Divido</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+    body {
+        margin: 0;
+        background: linear-gradient(60deg, #0d0d0d 0%, #1a1a1a 25%, #FFC1B3 60%, #1a1a1a 20%, #0d0d0d 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 5s ease forwards;
+        color: #FF6F61;
+        font-family: Arial, sans-serif;
+    }
+    @keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+    .top-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 2rem;
+    opacity: 0;
+    animation: fadeInButtons 1s ease-in-out 3.5s forwards;
+}
+
+.top-bar a {
+    color: black;
+    background-color: #FFD166; 
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    border-radius: 9px;
+    font-weight: bold;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.top-bar a:hover {
+    background-color: #f6c441; 
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(255, 209, 102, 0.6);
+}
+
+    .main-title {
+        height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 5rem;
+        font-weight: bold;
+        letter-spacing: 5px;
+        flex-direction: column;
+        text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.15);
+    }
+
+    .divido-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 50px; /* ✅ ensures equal spacing between letters */
+        position: relative;
+    }
+
+    .letter {
+        display: inline-block;
+        position: relative;
+    }
+
+    .d-first {
+        opacity: 1;
+        animation: showFirstD 1s ease-in-out forwards;
+    }
+
+    /* ✅ Absolutely center the first D for intro */
+    .d-original {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: hideOriginal 0.1s ease-in-out 1s forwards;
+    }
+
+    .d-split-left {
+        opacity: 0;
+        transform: translateX(0);
+        animation: splitLeft 1s ease-in-out 1s forwards;
+    }
+
+    .middle-letters {
+        font-size:70px;
+        font-style: italic;
+        opacity: 0;
+        transform: scale(0);
+        animation: revealMiddle 1s ease-in-out 2s forwards;
+    }
+
+    .d-split-right {
+        opacity: 0;
+        transform: translateX(0);
+        animation: splitRight 1s ease-in-out 1s forwards;
+    }
+
+    .last-letter {
+        font-size:70px;
+        font-style: italic;
+        opacity: 0;
+        transform: scale(0);
+        animation: revealLast 1s ease-in-out 2s forwards;
+    }
+
+    .tagline {
+        margin-top: 10px;
+        font-size: 16px;
+        color: white;
+        opacity: 0;
+        animation: fadeInTagline 1s ease-in-out 3s forwards;
+    }
+
+    /* === Animations === */
+
+    .d-split-left, .d-split-right {
+    font-family: 'Great Vibes', cursive;
+    font-size: 6rem;
+    position: absolute;  /* Overlap at center */
+    left: 50%;
+    transform: translateX(-50%); /* Perfect centering */
+    opacity: 0;
+}
+
+.d-split-left {
+    animation: splitLeft 1s ease-in-out 1s forwards;
+}
+
+.d-split-right {
+    animation: splitRight 1s ease-in-out 1s forwards;
+}
+
+@keyframes splitLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%); /* Center */
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%); /* Hold for fade in */
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-222px); /* Move left */
+    }
+}
+
+@keyframes splitRight {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%); /* Center */
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(67px); /* Move right */
+    }
+}
+
+    @keyframes revealMiddle {
+        0% {
+            opacity: 0;
+            transform: scale(0);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes revealLast {
+        0% {
+            opacity: 0;
+            transform: scale(0);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes fadeInTagline {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInButtons {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes hideOriginal {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+</style>
+
+</head>
+<body>
+    <div class="top-bar">
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Sign Up</a>
+    </div>
+
+    <div class="main-title">
+        <div class="divido-container">
+            <span class="letter d-split-left">D</span>
+            <span class="letter d-split-right">D</span>
+            <span class="letter middle-letters">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i v i&nbsp;&nbsp;&nbsp;</span>
+            <span class="letter d-split-right">D</span>
+            <span class="letter last-letter">&nbsp;o</span>
+        </div>
+        <p class="tagline">Split costs, not friendships..</p>
+    </div>
+
+    <script>
+        // Optional: Add event listener to restart animation on page load
+        window.addEventListener('load', function() {
+            // Animation starts automatically with CSS
+        });
+    </script>
+</body>
+</html>

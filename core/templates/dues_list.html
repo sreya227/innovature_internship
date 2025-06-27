@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dues</title>
+    <style>
+        :root {
+            --primary: #FF6F61;
+            --primary-hover: #e85c50;
+            --accent: #FFD166;
+            --accent-hover: #f6c441;
+            --bg-dark: #0f0f0f;
+            --bg-card: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #cccccc;
+            --border: #333333;
+        }
+        .light-theme {
+  --bg-dark: #dcd3c6;  /* dusty beige */
+
+   /* soft warm tan for body background */
+  --bg-card: #7b5e47;
+  /* Deeper mocha — still light mode, better contrast */
+  --text: #000000;
+  --text-muted: #000000;
+}
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: Arial, sans-serif;
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: var(--bg-card);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 30px;
+        }
+
+        .dues-entry {
+            background-color: var(--bg-dark);
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.05);
+        }
+
+        .amount {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .amount.positive {
+            color: #4CAF50;
+        }
+
+        .amount.negative {
+            color: red;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="{% if group %}{% url 'group_detail' group.id %}{% else %}{% url 'dashboard' %}{% endif %}" class="back-button">← Back</a>
+    <h2>{{ label }}</h2>
+
+    {% if dues %}
+        {% for d in dues %}
+            <div class="dues-entry">
+                <div class="amount {% if d.is_positive %}positive{% else %}negative{% endif %}">
+                    ₹{{ d.amount|floatformat:2 }}
+                </div>
+                <div class="meta">
+                    {% if d.is_positive %}
+                        From: {{ d.user.username }}
+                    {% else %}
+                        To: {{ d.user.username }}
+                    {% endif %}
+
+                    {% if group %}
+                        <br>Group: {{ group.title }}
+                    {% endif %}
+
+                    {% if d.splits %}
+                        <br><br><strong>Related Splits:</strong><br>
+                        {% for s in d.splits %}
+    • {% if s.split.description %}{{ s.split.description }}{% else %}Split{% endif %}<br>
+    &nbsp;Total: ₹{{ s.amount|floatformat:2 }}<br>
+    &nbsp;Paid: ₹{{ s.paid|floatformat:2 }}<br>
+    &nbsp;Remaining: ₹{{ s.remaining|floatformat:2 }}<br>
+    &nbsp;Date: {{ s.split.created_at|date:"M d, Y" }} at {{ s.split.created_at|time:"H:i" }}<br><br>
+{% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No unpaid dues.</p>
+    {% endif %}
+</div>
+<script>
+  window.onload = function () {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  };
+</script>
+</body>
+</html>
+
